@@ -1,1 +1,1 @@
-# latent_Gaussian
+# latent Gaussian time series modeling
