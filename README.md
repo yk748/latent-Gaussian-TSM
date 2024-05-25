@@ -1,1 +1,1 @@
-# latent Gaussian time series modeling
+# latent Gaussian models for count time series
