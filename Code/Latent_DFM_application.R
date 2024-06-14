@@ -212,11 +212,11 @@ pl_lambda <- ggplot(df_lambda,aes(x=factor,y=item,fill=value))+
   ggtitle(TeX("$\\widehat{\\Lambda}$"))+
   scale_fill_gradient2(name="",low="darkblue",high="darkred")+
   scale_y_discrete(name="Item",
-                   limits = levels(as.factor(df_lambda$item)), 
+                   limits = rev(levels(as.factor(df_lambda$item))), 
                    breaks = levels(as.factor(df_lambda$item)),
                    labels = label)+
   scale_x_discrete(name="Factor",
-                   limits = levels(as.factor(df_lambda$factor)), 
+                   limits = rev(levels(as.factor(df_lambda$factor))), 
                    breaks = levels(as.factor(df_lambda$factor)),
                    labels = c("C1","C2","C3","C4","C5")) +
   theme(legend.position="bottom",
