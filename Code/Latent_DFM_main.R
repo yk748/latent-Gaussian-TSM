@@ -48,49 +48,49 @@ for (i in 1:4){ # dist
   for (j in 1:2){ # rank
     for (k in 1:4){ # d
       for (l in 1:2){ # T
-        
+
         #---------------------------------------------------#
         # Set up:
         p <- 1
         r <- r_list[j]
-        
+
         # H: This will be used in forecasting
         H <- 12
-        
+
         d <- d_list[k]
         TT <- TT_list[l]
-        
+
         rho <- 0.9
         c <- 0.3
-        
+
         model_list <- list()
         model_list$Psi <- array(diag(rho,r),dim=c(r,r,p))
         model_list$Cov_eta <- diag(1-rho^2,r)
         model_list$Lambda <- matrix(rnorm(c(d*r),0,1),ncol=r)
         unif <- runif(d,c,1-c)
         model_list$Cov_eps <- diag(unif/(1-unif)*rowSums(model_list$Lambda^2),d)
-        
+
         dist <- dist_list[i]
         dist_opt <- NULL
         if (i == 1){ #"Bern"
           model_list$Param <- c(rep(0.2,d/3),rep(0.4,d/3),rep(0.7,d/3))
-          
+
         }else if (i == 2){ #"multinom"
           dist_opt <- 5
           model_list$Param <- c(lapply(X=1:(d/3),FUN=function(X)rep(0.2,dist_opt)),
                                 lapply(X=1:(d/3),FUN=function(X)c(0,0.25,0.5,0.25,0)),
                                 lapply(X=1:(d/3),FUN=function(X)c(0.45,0,0.1,0,0.45)) )
-          
+
         }else if (i == 3){ #"Pois"
           model_list$Param <- c(rep(0.1,d/3),rep(1,d/3),rep(10,d/3))
-          
+
         }else if (i == 4){ #"negbin"
           model_list$Param <- c(lapply(X=1:(d/3),FUN=function(X)c(0.2,3)),
                                 lapply(X=1:(d/3),FUN=function(X)c(0.4,3)),
                                 lapply(X=1:(d/3),FUN=function(X)c(0.7,3)))
-          
+
         }
-        
+
         #---------------------------------------------------#
         # Main loop
         sim_model <- list()
@@ -106,7 +106,7 @@ for (i in 1:4){ # dist
         cat("#----------------------------------# \n")
         cat("Setting ",i,j,k,l," begins \n")
         for (iter in 1:N_sim){
-          
+
           cat(iter,"th iteration begins \n")
           #---------------------------------------------------#
           # Generate data:
@@ -114,7 +114,7 @@ for (i in 1:4){ # dist
           again <- TRUE
           while (again){
             DGP <- Latent_DFM_Model(p,r,d,(TT+H),dist,dist_opt,model_list,identy_opt=1)
-            
+
             if (i == 1){
               if (sum(rowSums(DGP$X_t) == 0) == 0 & sum(rowSums(DGP$X_t) == TT) == 0){
                 again <- FALSE
@@ -141,11 +141,11 @@ for (i in 1:4){ # dist
           sim_X[[iter]] <- DGP$X_t
           sim_Y[[iter]] <- DGP$Y_t
           sim_Z[[iter]] <- DGP$Z_t
-          
+
           #---------------------------------------------------#
           # Estimation:
           start.time <- proc.time()
-          
+
           X_t <- DGP$X_t[,-c(TT+1:(TT+H))]
           Cov_X <- Latent_Gauss_Cov(d,TT,p,X_t)
           sim_cov_X[[iter]] <- Cov_X
@@ -155,14 +155,14 @@ for (i in 1:4){ # dist
           sim_cov_Z[[iter]] <- Cov_Z
           Estim <- Latent_DFM_Estim(r,p,Cov_Z,identy_opt=1,shift=TRUE)
           sim_est[[iter]] <- Estim
-          
+
           end.time <- proc.time()
           sim_time[[iter]] <- end.time - start.time
           cat("Time taken is",sim_time[[iter]][1],"\n")
         }
         cat("Setting ",i,j,k,l," ends \n")
         cat("#----------------------------------# \n")
-        
+
         fn <- paste0("Estim","_dist",i,"_type",j,"_d",k,"_T",l,".rda")
         path <- dir_est
         save(sim_model,sim_X,sim_Y,sim_Z,sim_cov_X,sim_link,sim_cov_Z,sim_est,sim_time,
@@ -184,27 +184,27 @@ for (i in 1:4){ # dist
   for (j in 1:2){ # rank
     for (k in 1:4){ # d
       for (l in 1:2){ # T
-        
+
         #---------------------------------------------------#
         # load file:
         cat("Setting ",i,j,k,l," begins \n")
         load_fn <- paste0("Estim","_dist",i,"_type",j,"_d",k,"_T",l,".rda")
         path_est <- dir_est
         load(paste0(path_est,"/",load_fn))
-        
+
         #---------------------------------------------------#
         # Set up:
         p <- 1
-        
+
         H <- 12
         d <- d_list[k]
         TT <- TT_list[l]
-        
+
         sim_trad_r <- list()
         sim_cv_r <- list()
         N_sim <- 100
         for (iter in 1:N_sim){
-          
+
           cat(iter,"th iteration begins \n")
           #---------------------------------------------------#
           # estimating r:
@@ -216,7 +216,7 @@ for (i in 1:4){ # dist
         }
         cat("Setting ",i,j,k,l," ends \n")
         cat("#----------------------------------# \n")
-        
+
         save_fn <- paste0("r_est","_dist",i,"_type",j,"_d",k,"_T",l,".rda")
         path_r <- dir_r
         save(sim_trad_r,sim_cv_r,file = file.path(path_r,save_fn))
@@ -353,7 +353,7 @@ for (i in 1:4){ # dist
             tmp_param[iter] <- sqrt(norm(Param - unlist(sim_link[[iter]]$Param),"2")^2/d)
           }else if (i == 4){
             tmp_param[iter] <- sqrt(norm(mapply(x=1:d,function(x)Param[[x]][1]) 
-                                         - mapply(x=1:d,function(x)sim_link[[iter]]$Param[[x]][1]),"2")^2/d)
+                                    - mapply(x=1:d,function(x)sim_link[[iter]]$Param[[x]][1]),"2")^2/d)
           }
           
           tmp_lambda[iter] <- sqrt(norm(sim_model$Lambda - sim_est[[iter]]$Lambda,"F")^2/d)
@@ -380,7 +380,7 @@ for (i in 1:4){ # dist
         cat("Cov of VAR is mean:",round(mean(tmp_cov_eta),4),
             "sd is","(",round(sd(tmp_cov_eta),4),")","\n")
         cat("#----------------------------------#","\n")
-        
+
       }
     }
   }
@@ -588,6 +588,7 @@ for (i in 1:4){ # dist
         ACC_H1 <- ACC_H2 <- ACC_H3 <- ACC_H6 <- ACC_H12 <- vector("numeric",N_sim)
         L_H1 <- L_H2 <- L_H3 <- L_H6 <- L_H12 <- vector("numeric",N_sim)
         M_H1 <- M_H2 <- M_H3 <- M_H6 <- M_H12 <- vector("numeric",N_sim)
+        I_H1 <- I_H2 <- I_H3 <- I_H6 <- I_H12 <- vector("numeric",N_sim)
         for (iter in 1:N_sim){
           Y_H1[iter] <- sqrt(mean(mapply(x=1:100,function(x)norm(sim_Y[[iter]][,TT+H1] 
                                                                  - sim_Forecast[[iter]]$Y_hat_h[,H1,x],"2")^2))/r)
@@ -636,8 +637,21 @@ for (i in 1:4){ # dist
           M_H3[iter] <- sum(sim_X[[iter]][,TT+H3] == M)/d
           M_H6[iter] <- sum(sim_X[[iter]][,TT+H6] == M)/d
           M_H12[iter] <- sum(sim_X[[iter]][,TT+H12] == M)/d
+          
+          if (i == 1){
+            Z0 <- 1*(unlist(sim_model$threshold) > 0)
+          }else if (i == 2){
+            Z0 <- mapply(x=1:d,function(x){sum(sim_model$threshold[[x]] < 0)+1})
+          }else{
+            Z0 <- mapply(x=1:d,function(x){sum(sim_model$threshold[[x]] < 0)})
+          }
+          I_H1[iter] <- sum(sim_X[[iter]][,TT+H1] == Z0)/d
+          I_H2[iter] <- sum(sim_X[[iter]][,TT+H2] == Z0)/d
+          I_H3[iter] <- sum(sim_X[[iter]][,TT+H3] == Z0)/d
+          I_H6[iter] <- sum(sim_X[[iter]][,TT+H6] == Z0)/d
+          I_H12[iter] <- sum(sim_X[[iter]][,TT+H12] == Z0)/d
         }
-        
+
         #----------------------------------#
         # reporting:
         cat("#----------------------------------#","\n")
@@ -655,17 +669,17 @@ for (i in 1:4){ # dist
         cat("MSFE_Z at H=3 are mean (sd):",round(mean(Z_H3),4),"(",round(sd(Z_H3),4),")","\n")
         cat("MSFE_Z at H=6 are mean (sd):",round(mean(Z_H6),4),"(",round(sd(Z_H6),4),")","\n")
         cat("MSFE_Z at H=12 are mean (sd):",round(mean(Z_H12),4),"(",round(sd(Z_H12),4),")","\n")
-        cat("MSFE_X at H=1 are mean (sd):",round(mean(X_H1),4),"(",round(sd(X_H1),4),")","\n")
-        cat("MSFE_X at H=2 are mean (sd):",round(mean(X_H2),4),"(",round(sd(X_H2),4),")","\n")
-        cat("MSFE_X at H=3 are mean (sd):",round(mean(X_H3),4),"(",round(sd(X_H3),4),")","\n")
-        cat("MSFE_X at H=6 are mean (sd):",round(mean(X_H6),4),"(",round(sd(X_H6),4),")","\n")
-        cat("MSFE_X at H=12 are mean (sd):",round(mean(X_H12),4),"(",round(sd(X_H12),4),")","\n")
-        cat("ACC at H=1 are mean (L,M):",round(mean(ACC_H1),4),"(",round(c(mean(L_H1),mean(M_H1)),4),")","\n")
-        cat("ACC at H=2 are mean (L,M):",round(mean(ACC_H2),4),"(",round(c(mean(L_H2),mean(M_H2)),4),")","\n")
-        cat("ACC at H=3 are mean (L,M):",round(mean(ACC_H3),4),"(",round(c(mean(L_H3),mean(M_H3)),4),")","\n")
-        cat("ACC at H=6 are mean (L,M):",round(mean(ACC_H6),4),"(",round(c(mean(L_H6),mean(M_H6)),4),")","\n")
-        cat("ACC at H=12 are mean (L,M):",round(mean(ACC_H12),4),"(",round(c(mean(L_H12),mean(M_H12)),4),")","\n")
-        
+        cat("MSFE_X at H=1 are mean (sd):",round(mean(X_H1),4),"\n")
+        cat("MSFE_X at H=2 are mean (sd):",round(mean(X_H2),4),"\n")
+        cat("MSFE_X at H=3 are mean (sd):",round(mean(X_H3),4),"\n")
+        cat("MSFE_X at H=6 are mean (sd):",round(mean(X_H6),4),"\n")
+        cat("MSFE_X at H=12 are mean (sd):",round(mean(X_H12),4),"\n")
+        cat("ACC at H=1 are mean (L,M,I):",round(mean(ACC_H1),4),"(",round(c(mean(L_H1),mean(M_H1),mean(I_H1)),4),")","\n")
+        cat("ACC at H=2 are mean (L,M,I):",round(mean(ACC_H2),4),"(",round(c(mean(L_H2),mean(M_H2),mean(I_H2)),4),")","\n")
+        cat("ACC at H=3 are mean (L,M,I):",round(mean(ACC_H3),4),"(",round(c(mean(L_H3),mean(M_H3),mean(I_H3)),4),")","\n")
+        cat("ACC at H=6 are mean (L,M,I):",round(mean(ACC_H6),4),"(",round(c(mean(L_H6),mean(M_H6),mean(I_H6)),4),")","\n")
+        cat("ACC at H=12 are mean (L,M,I):",round(mean(ACC_H12),4),"(",round(c(mean(L_H12),mean(M_H12),mean(I_H12)),4),")","\n")
+
         cat("#----------------------------------#","\n")
       }
     }

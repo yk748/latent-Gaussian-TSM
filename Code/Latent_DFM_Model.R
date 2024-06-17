@@ -185,7 +185,7 @@ companion_form_phi = function(Psi,d,p){
     for (i in 1:p){
       for (j in 1:p){
         if(i == 1){
-          comp_Psi[1:d,((j-1)*d+1):(j*d)] <- Phi[,,j]
+          comp_Psi[1:d,((j-1)*d+1):(j*d)] <- Psi[,,j]
         }
         else if ( (i-1) == j & i != 1 ){
           comp_Psi[((i-1)*d+1):(i*d),((j-1)*d+1):(j*d)] <- diag(1,d)
