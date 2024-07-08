@@ -96,7 +96,7 @@ l_ij_func <- function(param_list,dist,K){
     P_i <- param_list[[1]]
     cov_0_i <- P_i*(1-P_i)
     
-    Pr_i <- P_i
+    Pr_i <- 1-P_i
     
   } else if (dist == "Pois"){
     lambda_i <- param_list[[1]]
@@ -130,7 +130,7 @@ l_ij_func <- function(param_list,dist,K){
     P_j <- param_list[[2]]
     cov_0_j <- P_j*(1-P_j)
     
-    Pr_j <- P_j
+    Pr_j <- 1-P_j
     
   } else if (dist == "Pois"){
     lambda_j <- param_list[[2]]
