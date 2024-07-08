@@ -5,19 +5,23 @@ Latent_DFM_p_Selection_trad <- function(d,TT,r,X_t,Link,identy_opt){
   
   # ------------------------------------------------- #
   # set up for four ICs
-  p_grid <- seq(1,5)
+  p_max <- 5
+  p_grid <- seq(1,p_max)
   IC <- array(NA,dim=c(length(p_grid),4))
+  
+  # ------------------------------------------------- #
+  # Compute Cov_X and implied Cov_Z with p_max
+  Cov_X_p_max <- Latent_Gauss_Cov(d,TT,p_max,X_t)
+  Cov_Z_p_max <- Latent_Gauss_invLink(d,p,Cov_X_p_max,Link)
   
   # ------------------------------------------------- #
   # main loop for ICs
   for (p in p_grid){
     
     # ------------------------------------------------- #
-    # Compute Cov_X and implied Cov_Z
-    Cov_X <- Latent_Gauss_Cov(d,TT,p,X_t)
-    Cov_Z <- Latent_Gauss_invLink(d,p,Cov_X,Link)
-
-    Estim_p <- Latent_DFM_Estim(r,p,Cov_Z,identy_opt,shift=TRUE)
+    # Estimate model parameters with Cov_Z within p
+    Estim_p <- Latent_DFM_Estim(r,p,Cov_Z_p_max[,,c((p_max+1-p):(p_max+1+p))],
+                                identy_opt,shift=TRUE)
     Cov_eta_p <- diag(Estim_p$Cov_eps,d)
     V_term <- log(norm(Cov_eta_p,type="F")^2/(d*TT))
     

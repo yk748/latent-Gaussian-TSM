@@ -89,10 +89,8 @@ ggplot(df_L_melt,aes(y=value, x=u, color=variable)) +
   scale_x_continuous(name=TeX("$u$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
   scale_color_manual(name=TeX("Bern($p_i$)"),
                      labels=cols,values=c("black","blue","red","green")) +
-  theme(legend.position=c(0.75,0.2),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.2),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
@@ -109,15 +107,12 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
                      labels=cols,values=c("black","blue","red","green")) +
   scale_linetype_manual(name="",
                      labels=lines,values=c("dashed","dotted")) +
-  theme(legend.position=c(0.75,0.3),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.3),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
         panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
-  guides(color = guide_legend(order=1), linetype = guide_legend(order=0)) +
   geom_line(cex=0.5)
 dev.off()
 
@@ -183,10 +178,10 @@ df_inv_L2_melt$type <- "exact"
 df_inv_L_melt <- rbind(df_inv_L1_melt,df_inv_L2_melt)
 df_inv_L_melt$type <-factor(df_inv_L_melt$type,levels=c("interpolated","exact"))
 
-cols <- unname(TeX(c("$p_{i}=\t{uniform},p_{j}=\t{uniform}$",
-                     "$p_{i}=\t{uniform},p_{j}=\t{trimodal}$", 
-                     "$p_{i}=\t{unimodal},p_{j}=\t{uniform}$",
-                     "$p_{i}=\t{unimodal},p_{j}=\t{trimodal}$")))
+cols <- unname(TeX(c("$p_{i}=\t{even},p_{j}=\t{even}$",
+                     "$p_{i}=\t{even},p_{j}=\t{bimodal}$", 
+                     "$p_{i}=\t{unimodal},p_{j}=\t{even}$",
+                     "$p_{i}=\t{unimodal},p_{j}=\t{bimodal}$")))
 lines <- c("Interpolated","Exact")
 
 pdf(width=9.5,height=9.5,file = "link_multinom.pdf")
@@ -196,10 +191,8 @@ ggplot(df_L_melt,aes(y=value, x=u, color=variable)) +
   scale_x_continuous(name=TeX("$u$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
   scale_color_manual(name=TeX("multinom($p_{i}=(p_{i1},...,p_{i5})$)"),
                      labels=cols,values=c("black","blue","red","green")) +
-  theme(legend.position=c(0.75,0.2),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.8,0.2),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
@@ -216,14 +209,12 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
                      labels=cols,values=c("black","blue","red","green")) +
   scale_linetype_manual(name="",
                         labels=lines,values=c("dashed","dotted")) +
-  theme(legend.position=c(0.78,0.28),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.3),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
-        panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +          guides(color = guide_legend(order=1), linetype = guide_legend(order=0)) +
+        panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
   geom_line(cex=0.5)
 dev.off()
 
@@ -295,10 +286,8 @@ ggplot(df_L_melt,aes(y=value, x=u, color=variable)) +
   scale_x_continuous(name=TeX("$u$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
   scale_color_manual(name=TeX("Pois($\\theta_{i}$)"),
                      labels=cols,values=c("black","blue","red","green")) +
-  theme(legend.position=c(0.75,0.2),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.2),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
@@ -315,15 +304,12 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
                      labels=cols,values=c("black","blue","red","green")) +
   scale_linetype_manual(name="",
                         labels=lines,values=c("dashed","dotted")) +
-  theme(legend.position=c(0.75,0.3),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.3),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
         panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
-  guides(color = guide_legend(order=1), linetype = guide_legend(order=0)) +
   geom_line(cex=0.5)
 dev.off()
 
@@ -403,10 +389,8 @@ ggplot(df_L_melt,aes(y=value, x=u, color=variable)) +
   scale_x_continuous(name=TeX("$u$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
   scale_color_manual(name=TeX("NB$(p_{i},r=3)$"),
                      labels=cols,values=c("black","blue","red","green")) +
-  theme(legend.position=c(0.75,0.2),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.2),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
@@ -423,18 +407,12 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
                      labels=cols,values=c("black","blue","red","green")) +
   scale_linetype_manual(name="",
                         labels=lines,values=c("dashed","dotted")) +
-  theme(legend.position=c(0.75,0.3),
-        legend.title=element_text(size=20),
-        legend.key.size = unit(3,"line"),
-        legend.text=element_text(size=20,margin=margin(l=5,unit="pt")),
+  theme(legend.position=c(0.85,0.3),
+        legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
         panel.background = element_rect(fill = 'transparent'),
         panel.border = element_rect(fill=NA,color="black",linetype="solid"),
         panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
-  guides(color = guide_legend(order=1), linetype = guide_legend(order=0)) +
   geom_line(cex=0.5)
 dev.off()
-
-
-
 

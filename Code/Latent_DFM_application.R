@@ -214,7 +214,7 @@ pl_lambda <- ggplot(df_lambda,aes(x=factor,y=item,fill=value))+
   scale_y_discrete(name="Item",
                    limits = levels(as.factor(df_lambda$item)), 
                    breaks = levels(as.factor(df_lambda$item)),
-                   labels = rev(label))+
+                   labels = label)+
   scale_x_discrete(name="Factor",
                    limits = levels(as.factor(df_lambda$factor)), 
                    breaks = levels(as.factor(df_lambda$factor)),
