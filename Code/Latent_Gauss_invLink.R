@@ -1,7 +1,7 @@
 #################################################################################
 # Main function for computing inverse link functions
 #################################################################################
-Latent_Gauss_invLink <- function(d,p,Cov_X,Link){
+Latent_Gauss_invLink <- function(d,p,Cov_X,Link,dist,param_list){
   
   # ------------------------------------------------- #
   # Compute inverse link functions from the estimated link functions
@@ -13,11 +13,78 @@ Latent_Gauss_invLink <- function(d,p,Cov_X,Link){
   for (i in 1:d){
     for (j in 1:d){
       Cov_Z[i,j,] <- interpolation(Link[,i,j],grid_u,Cov_X[i,j,])
+      
+      # param <- list()
+      # if (dist == "multinom"){
+      #   param[[1]] <- Link_param$Param[[i]]
+      #   param[[2]] <- length(Link_param$Param[[i]])
+      #   param[[3]] <- Link_param$Param[[j]]
+      #   param[[4]] <- length(Link_param$Param[[j]])
+      # }
+      # 
+      # Cov_Z[i,j,] <- linear_interpolation(Link[,i,j],grid_u,Cov_X[i,j,],dist,param)
     }
   }
   
   return(Cov_Z)
 }
+
+
+#################################################################################
+# Function for linear interpolation:
+#################################################################################
+linear_interpolation <- function(coef,u,v,dist,param){
+  
+  # ------------------------------------------------- #
+  # Compute the knots
+  knot <- vector("numeric",length=length(u))
+  for (i in 1:length(u)){
+    pow <- 1:length(coef)
+    knot[i] <- coef[1:length(coef)]%*%(u[i]^pow)[1:length(coef)]
+  }
+  n <- length(knot);
+  knot <- Link_adjustment(u,coef,knot,dist,param)
+  
+  # ------------------------------------------------- #
+  # main loop
+  L_inv_v <- vector("numeric",length(v));
+  for (i in 1:length(v)){
+    if ( v[i] < knot[1] |  v[i] > knot[n]){# Cutoff L(u) < -1 or L(u) > 1:
+      
+      if ( v[i] < knot[1] ){# Cutoff L(u) < -1
+        L_inv_v[i] <- -1;  
+        next;
+      }
+      else {# Cutoff L(u) > 1
+        L_inv_v[i] <- 1; 
+        next;
+      }
+      
+    }else{
+      idx <- 1;
+      while(v[i] > knot[idx]){
+        idx <- idx+1;
+      }
+      idx <- idx-1;
+      
+      First_term <- (v[i] - knot[idx])/(knot[idx+1] - knot[idx])*u[idx+1]
+      Second_term <- (knot[idx+1] - v[i])/(knot[idx+1] - knot[idx])*u[idx]
+      L_inv_v[i] <- First_term + Second_term
+      
+      # First_term <- d[(idx+1)]*(v[i]-knot[idx])^3/(6*h[(idx+1)])
+      # Second_term <- d[idx]*(knot[(idx+1)]-v[i])^3/(6*h[(idx+1)])
+      # Third_term <- c[1,idx]*(v[i]-knot[idx])
+      # Fourth_term <- c[2,idx]*(knot[(idx+1)]-v[i])
+      # 
+      # L_inv_v[i] <- First_term + Second_term + Third_term + Fourth_term
+      next;
+    }
+  } 
+  return(L_inv_v)
+  
+}
+
+
 
 #################################################################################
 # Main function for interpolation: Find the interval where the values are belonging to
@@ -111,7 +178,7 @@ nat_spline <- function(coef,u){
   }
   
   # ------------------------------------------------- #
-  # compute the piecewise ploynomial
+  # compute the piecewise polynomial
   c <- matrix(0,nrow=2,ncol=(n-1));
   d <- solve(LHS)%*%RHS;
   

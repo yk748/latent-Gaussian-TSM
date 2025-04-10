@@ -188,3 +188,77 @@ l_ij_func <- function(param_list,dist,K){
   
   return(l_ij)
 }
+
+
+#################################################################################
+# Function for adjusting computed link functions
+#################################################################################
+Link_adjustment <- function(u,coef,knot,dist,param){
+  
+  if (sum(diff(knot) < 0) > 0){
+    
+    u_L1 <- which(diff(knot)<0 & knot[-1]>=0)
+    u_Lm1 <- which(diff(knot)<0 & knot[-1]<0)
+    
+    U <- runif(10000,0,1)
+    if (dist == "Bern"){
+      F1 <- cor(1*(U<param[[1]]),1*(U<param[[2]]))
+      Fm1 <- cor(1*(U<param[[1]]),1*((1-U)<param[[2]]))
+      
+    }else if (dist == "multinom"){
+      vec_Fi <- vector("numeric",length(U))
+      for (i in 1:(param[[2]])){
+        vec_Fi <- vec_Fi + 1*(U <= cumsum(param[[1]])[i])
+      }
+      vec_Fj <- vector("numeric",length(U))
+      for (j in 1:(param[[4]])){
+        vec_Fj <- vec_Fj + 1*(U <= cumsum(param[[3]])[j])
+      }
+      F1 <- cor(vec_Fi,vec_Fj)
+      
+      vec_Fmi <- vector("numeric",length(U))
+      for (i in 1:(param[[2]])){
+        vec_Fmi <- vec_Fmi + 1*(U <= cumsum(param[[1]])[i])
+      }
+      vec_Fmj <- vector("numeric",length(U))
+      for (j in 1:(param[[4]])){
+        vec_Fmj <- vec_Fmj + 1*((1-U) <= cumsum(param[[3]])[j])
+      }
+      Fm1 <- cor(vec_Fmi,vec_Fmj)
+      
+    }else if (dist == "Pois"){
+      F1 <- cor(qpois(U,param[[1]]),qpois(U,param[[2]]))
+      Fm1 <- cor(qpois(U,param[[1]]),qpois((1-U),param[[2]]))
+      
+    }else if (dist == "negbin"){
+      F1 <- cor(qnbinom(U,param[[2]],param[[1]]),
+                qnbinom(U,param[[4]],param[[3]]))
+      Fm1 <- cor(qnbinom(U,param[[2]],param[[1]]),
+                 qnbinom((1-U),param[[4]],param[[3]]))
+      
+    }
+    
+    pow <- 1:length(coef)
+    if (length(u_Lm1)!=0){
+      u_Lm1 <- c(1,u_Lm1+1)
+      for (i in 1:length(u_Lm1)){
+        knot[u_Lm1[i]] <- c(coef,-(Fm1 - coef %*% (-1)^pow))%*%(u[u_Lm1[i]]^c(pow,(length(coef)+1)))
+      }
+    }
+    
+    if (length(u_L1)!=0){
+      u_L1 <- u_L1+1
+      for (i in 1:length(u_L1)){
+        knot[u_L1[i]] <- c(coef,(F1 - coef %*% (1)^pow))%*%(u[u_L1[i]]^c(pow,(length(coef)+1)))
+      }
+    }
+    
+    return(knot)
+  }else{
+    return(knot)
+  }
+}
+
+
+
+

@@ -28,24 +28,23 @@ u <- c(seq(-1,-0.72,0.01),seq(-0.7,0,0.2),seq(0.1,0.7,0.2),seq(0.72,1,0.01)) # P
 param_case1 <- list()
 param_case1[[1]] <- 0.4
 param_case1[[2]] <- 0.4
-l_ij_case1 <- l_ij_func(param_case1,dist="Bern",K=100)
+l_ij_case1 <- l_ij_func(param_case1,dist="Bern",K=170)
 
 param_case2 <- list()
 param_case2[[1]] <- 0.2
 param_case2[[2]] <- 0.7
-l_ij_case2 <- l_ij_func(param_case2,dist="Bern",K=100)
+l_ij_case2 <- l_ij_func(param_case2,dist="Bern",K=170)
 
 param_case3 <- list()
 param_case3[[1]] <- 0.2
 param_case3[[2]] <- 0.4
-l_ij_case3 <- l_ij_func(param_case3,dist="Bern",K=100)
+l_ij_case3 <- l_ij_func(param_case3,dist="Bern",K=170)
 
 param_case4 <- list()
 param_case4[[1]] <- 0.4
 param_case4[[2]] <- 0.7
-l_ij_case4 <- l_ij_func(param_case4,dist="Bern",K=100)
+l_ij_case4 <- l_ij_func(param_case4,dist="Bern",K=170)
 
-# Compute link and inverse link functions:
 L_case1 <- L_case2 <- L_case3 <- L_case4 <- vector("numeric",length=length(u))
 for (i in 1:length(u)){
   pow <- 1:length(l_ij_case1)
@@ -55,11 +54,17 @@ for (i in 1:length(u)){
   L_case4[i] <- l_ij_case4[1:length(l_ij_case4)]%*%(u[i]^pow)[1:length(l_ij_case4)]
 }
 
+L_case1 <- Link_adjustment(u,coef=l_ij_case1,knot=L_case1,dist="Bern",param=param_case1)
+L_case2 <- Link_adjustment(u,coef=l_ij_case2,knot=L_case2,dist="Bern",param=param_case2)
+L_case3 <- Link_adjustment(u,coef=l_ij_case3,knot=L_case3,dist="Bern",param=param_case3)
+L_case4 <- Link_adjustment(u,coef=l_ij_case4,knot=L_case4,dist="Bern",param=param_case4)
+
+
 v <- seq(-1,1,0.01) # Assumed input Cov_X
-L_inv_case1 <- interpolation(l_ij_case1,u,v)
-L_inv_case2 <- interpolation(l_ij_case2,u,v)
-L_inv_case3 <- interpolation(l_ij_case3,u,v)
-L_inv_case4 <- interpolation(l_ij_case4,u,v)
+L_inv_case1 <- linear_interpolation(l_ij_case1,u,v,dist="Bern",param=param_case1)
+L_inv_case2 <- linear_interpolation(l_ij_case2,u,v,dist="Bern",param=param_case2)
+L_inv_case3 <- linear_interpolation(l_ij_case3,u,v,dist="Bern",param=param_case3)
+L_inv_case4 <- linear_interpolation(l_ij_case4,u,v,dist="Bern",param=param_case4)
 
 # plotting:
 df_L <- data.frame(u=u,case1=L_case1,case2=L_case2,case3=L_case3,case4=L_case4)
@@ -106,7 +111,7 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
   scale_color_manual(name=TeX("Bern($p_i$)"),
                      labels=cols,values=c("black","blue","red","green")) +
   scale_linetype_manual(name="",
-                     labels=lines,values=c("dashed","dotted")) +
+                        labels=lines,values=c("dashed","dotted")) +
   theme(legend.position=c(0.85,0.3),
         legend.text=element_text(margin=margin(l=5,unit="pt")),
         legend.key = element_rect(colour = "transparent", fill = "transparent"),
@@ -115,6 +120,7 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
         panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
   geom_line(cex=0.5)
 dev.off()
+
 
 #---------------------------------------------------#
 # Multinomial distribution:
@@ -157,11 +163,17 @@ for (i in 1:length(u)){
   L_case4[i] <- l_ij_case4[1:length(l_ij_case4)]%*%(u[i]^pow)[1:length(l_ij_case4)]
 }
 
+L_case1 <- Link_adjustment(u,coef=l_ij_case1,knot=L_case1,dist="multinom",param=param_case1)
+L_case2 <- Link_adjustment(u,coef=l_ij_case2,knot=L_case2,dist="multinom",param=param_case2)
+L_case3 <- Link_adjustment(u,coef=l_ij_case3,knot=L_case3,dist="multinom",param=param_case3)
+L_case4 <- Link_adjustment(u,coef=l_ij_case4,knot=L_case4,dist="multinom",param=param_case4)
+
 v <- seq(-1,1,0.01) # Assumed input Cov_X
-L_inv_case1 <- interpolation(l_ij_case1,u,v)
-L_inv_case2 <- interpolation(l_ij_case2,u,v)
-L_inv_case3 <- interpolation(l_ij_case3,u,v)
-L_inv_case4 <- interpolation(l_ij_case4,u,v)
+L_inv_case1 <- linear_interpolation(l_ij_case1,u,v,dist="multinom",param=param_case1)
+L_inv_case2 <- linear_interpolation(l_ij_case2,u,v,dist="multinom",param=param_case2)
+L_inv_case3 <- linear_interpolation(l_ij_case3,u,v,dist="multinom",param=param_case3)
+L_inv_case4 <- linear_interpolation(l_ij_case4,u,v,dist="multinom",param=param_case4)
+
 
 # plotting:
 df_L <- data.frame(u=u,case1=L_case1,case2=L_case2,case3=L_case3,case4=L_case4)
@@ -184,12 +196,12 @@ cols <- unname(TeX(c("$p_{i}=\t{even},p_{j}=\t{even}$",
                      "$p_{i}=\t{unimodal},p_{j}=\t{bimodal}$")))
 lines <- c("Interpolated","Exact")
 
-pdf(width=9.5,height=9.5,file = "link_multinom.pdf")
+pdf(width=9.5,height=9.5,file = "link_categ.pdf")
 par(mar=c(0,0,0,0))
 ggplot(df_L_melt,aes(y=value, x=u, color=variable)) +
   scale_y_continuous(name=TeX("$L(u)$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
   scale_x_continuous(name=TeX("$u$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
-  scale_color_manual(name=TeX("multinom($p_{i}=(p_{i1},...,p_{i5})$)"),
+  scale_color_manual(name=TeX("categorical($p_{i}=(p_{i1},...,p_{i5})$)"),
                      labels=cols,values=c("black","blue","red","green")) +
   theme(legend.position=c(0.8,0.2),
         legend.text=element_text(margin=margin(l=5,unit="pt")),
@@ -200,12 +212,12 @@ ggplot(df_L_melt,aes(y=value, x=u, color=variable)) +
   geom_line(cex=0.5)
 dev.off()
 
-pdf(width=9.5,height=9.5,file = "inv_link_multinom.pdf")
+pdf(width=9.5,height=9.5,file = "inv_link_categ.pdf")
 par(mar=c(0,0,0,0))
 ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
   scale_y_continuous(name=TeX("$L^{-1}(v)$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
   scale_x_continuous(name=TeX("$v$"),breaks=seq(-1,1,0.2),limits=c(-1,1)) +
-  scale_color_manual(name=TeX("multinom($p_{i}=(p_{i1},...,p_{i5})$)"),
+  scale_color_manual(name=TeX("categorical($p_{i}=(p_{i1},...,p_{i5})$)"),
                      labels=cols,values=c("black","blue","red","green")) +
   scale_linetype_manual(name="",
                         labels=lines,values=c("dashed","dotted")) +
@@ -217,6 +229,7 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
         panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
   geom_line(cex=0.5)
 dev.off()
+
 
 #---------------------------------------------------#
 # Poisson distribution:
@@ -251,12 +264,17 @@ for (i in 1:length(u)){
   L_case4[i] <- l_ij_case4[1:length(l_ij_case4)]%*%(u[i]^pow)[1:length(l_ij_case4)]
 }
 
-v <- seq(-1,1,0.01) # Assumed input Cov_X
-L_inv_case1 <- interpolation(l_ij_case1,u,v)
-L_inv_case2 <- interpolation(l_ij_case2,u,v)
-L_inv_case3 <- interpolation(l_ij_case3,u,v)
-L_inv_case4 <- interpolation(l_ij_case4,u,v)
+L_case1 <- Link_adjustment(u,coef=l_ij_case1,knot=L_case1,dist="Pois",param=param_case1)
+L_case2 <- Link_adjustment(u,coef=l_ij_case2,knot=L_case2,dist="Pois",param=param_case2)
+L_case3 <- Link_adjustment(u,coef=l_ij_case3,knot=L_case3,dist="Pois",param=param_case3)
+L_case4 <- Link_adjustment(u,coef=l_ij_case4,knot=L_case4,dist="Pois",param=param_case4)
 
+
+v <- seq(-1,1,0.01) # Assumed input Cov_X
+L_inv_case1 <- linear_interpolation(l_ij_case1,u,v,dist="Pois",param=param_case1)
+L_inv_case2 <- linear_interpolation(l_ij_case2,u,v,dist="Pois",param=param_case2)
+L_inv_case3 <- linear_interpolation(l_ij_case3,u,v,dist="Pois",param=param_case3)
+L_inv_case4 <- linear_interpolation(l_ij_case4,u,v,dist="Pois",param=param_case4)
 
 # plotting:
 df_L <- data.frame(u=u,case1=L_case1,case2=L_case2,case3=L_case3,case4=L_case4)
@@ -313,6 +331,7 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
   geom_line(cex=0.5)
 dev.off()
 
+
 #---------------------------------------------------#
 # Negative binomial distribution:
 # Set parameters:
@@ -354,11 +373,17 @@ for (i in 1:length(u)){
   L_case4[i] <- l_ij_case4[1:length(l_ij_case4)]%*%(u[i]^pow)[1:length(l_ij_case4)]
 }
 
+L_case1 <- Link_adjustment(u,coef=l_ij_case1,knot=L_case1,dist="negbin",param=param_case1)
+L_case2 <- Link_adjustment(u,coef=l_ij_case2,knot=L_case2,dist="negbin",param=param_case2)
+L_case3 <- Link_adjustment(u,coef=l_ij_case3,knot=L_case3,dist="negbin",param=param_case3)
+L_case4 <- Link_adjustment(u,coef=l_ij_case4,knot=L_case4,dist="negbin",param=param_case4)
+
+
 v <- seq(-1,1,0.01) # Assumed input Cov_X
-L_inv_case1 <- interpolation(l_ij_case1,u,v)
-L_inv_case2 <- interpolation(l_ij_case2,u,v)
-L_inv_case3 <- interpolation(l_ij_case3,u,v)
-L_inv_case4 <- interpolation(l_ij_case4,u,v)
+L_inv_case1 <- linear_interpolation(l_ij_case1,u,v,dist="negbin",param=param_case1)
+L_inv_case2 <- linear_interpolation(l_ij_case2,u,v,dist="negbin",param=param_case2)
+L_inv_case3 <- linear_interpolation(l_ij_case3,u,v,dist="negbin",param=param_case3)
+L_inv_case4 <- linear_interpolation(l_ij_case4,u,v,dist="negbin",param=param_case4)
 
 
 # plotting:
@@ -415,4 +440,3 @@ ggplot(df_inv_L_melt,aes(y=value, x=x, color=variable, linetype=type)) +
         panel.grid.major = element_line(linetype = 'solid',linewidth=0.25,colour = "gray")) +
   geom_line(cex=0.5)
 dev.off()
-
