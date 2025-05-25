@@ -5,7 +5,7 @@ Latent Gaussian models are designed for modeling count time series in multivaria
 ## References
 
 <div id="ref-latent_var" class="references">
-Marie-Christine Düker, Robert Lund, and Vladas Pipiras. 2024. "High-dimensional latent Gaussian count time series: Concentration results for autocovariances and applications." <em>Electronic Journal of Statistics</em>, 18(2), 5484–5562. <https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-18/issue-2/High-dimensional-latent-Gaussian-count-time-series--Concentration-results/10.1214/24-EJS3125.full>
+Marie-Christine Düker, Robert Lund, and Vladas Pipiras. 2024. "High-dimensional latent Gaussian count time series: Concentration results for autocovariances and applications." <a href="https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-18/issue-2/High-dimensional-latent-Gaussian-count-time-series--Concentration-results/10.1214/24-EJS3125.full">https://projecteuclid.org/journals/electronic-journal-of-statistics/volume-18/issue-2/High-dimensional-latent-Gaussian-count-time-series--Concentration-results/10.1214/24-EJS3125.full</a>
 
 </div>
   
